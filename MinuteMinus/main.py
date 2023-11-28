@@ -13,6 +13,7 @@ import pygame
 import sys
 import random
 
+# Initialize Game
 pygame.init()
 
 # Constants
@@ -20,8 +21,13 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 PLAYER_SPEED = 10
 ORIGINAL_METER_X = 370
+RED_COLOR = (251, 0, 0, 50)
+ORANGE_COLOR = (251, 126, 0, 100)
 clock = pygame.time.Clock()
 BLOCK_ROW_COUNT = 2
+
+# Fonts
+font = pygame.font.Font(None, 36)
 
 ## Variables
 # General Vars
@@ -43,7 +49,7 @@ inTheAirTurnCount = 0
 
 # Create the Screen
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Minus Minute Prototype")
+pygame.display.set_caption("Minus Minute Py.Prototype")
 
 # Declare Fonts
 font = pygame.font.Font(None, 36)
@@ -103,6 +109,13 @@ five_box_broken_rect = five_box_broken.get_rect(center=(SCREEN_WIDTH // 2, SCREE
 # Meter Point
 meter_point_rect = meter_point.get_rect(center=((SCREEN_WIDTH // 2), 45))
 
+### Load best score from file
+##try:
+##    with open("best_score.txt", "r") as file:
+##        highScore = int(file.read())
+##except FileNotFoundError:
+##    highScore = 0
+
 ## Functions / Methods
 # Create Block Row
 def CreateABlockRow(blockAr):
@@ -159,12 +172,16 @@ def rowDisplay(blockAry):
         for i in range(5):       
             if(blockIdentityArray[j][i] == 1):
                 screen.blit(one_box, blockAry[j][i])
+                blockIdentityArray[j + 1][i] = 3
                 
             elif(blockIdentityArray[j][i] == 2):
                 screen.blit(three_box, blockAry[j][i])
+                blockIdentityArray[j + 1][i] = 3
                 
             elif(blockIdentityArray[j][i] == 3):
                 screen.blit(five_box, blockAry[j][i])
+            # This sets the last row to 3 which will be used as an object that has no mass for gravity interaction
+            #blockIdentityArray[j + 1][i] = 3
 
 # Display UI
 def displayWallUI(wall_img, wall_rect_L, wall_rect_R):
@@ -179,14 +196,33 @@ def displayMeterUI(meter_bl, meter_pnt, meter_pnt_rect):
     meter_rect_right_end = meter_bl.get_rect(center=((SCREEN_WIDTH // 2) + 82, 45))
 
     # Draw the Meter Block
-    screen.blit(meter_bl, meter_rect_mid)
-    screen.blit(meter_bl, meter_rect_left)
-    screen.blit(meter_bl, meter_rect_left_end)
-    screen.blit(meter_bl, meter_rect_right)
-    screen.blit(meter_bl, meter_rect_right_end)
+    if(meter_point_rect.x < meter_rect_mid.right and meter_point_rect.x > meter_rect_mid.left):
+        meterColorChange(meter_bar_hot, meter_bar_warm, meter_rect_mid, meter_rect_left, meter_rect_left_end,meter_rect_right,meter_rect_right_end)
 
-def meterColorChange():
-    print("Change the color of the meter")
+    elif(meter_point_rect.x < meter_rect_left.right and meter_point_rect.x > meter_rect_left.left):
+        meterColorChange(meter_bar_hot, meter_bar_warm, meter_rect_left, meter_rect_left_end,meter_rect_right,meter_rect_right_end, meter_rect_mid)
+        
+    elif(meter_point_rect.x < meter_rect_left_end.right and meter_point_rect.x > meter_rect_left_end.left):
+        meterColorChange(meter_bar_hot, meter_bar_warm, meter_rect_left_end, meter_rect_right, meter_rect_right_end, meter_rect_mid, meter_rect_left)
+        
+    elif(meter_point_rect.x < meter_rect_right.right and meter_point_rect.x > meter_rect_right.left):
+        meterColorChange(meter_bar_hot, meter_bar_warm, meter_rect_right, meter_rect_right_end, meter_rect_mid, meter_rect_left, meter_rect_left_end)
+        
+    elif(meter_point_rect.x < meter_rect_right_end.right and meter_point_rect.x > meter_rect_right_end.left):
+        meterColorChange(meter_bar_hot, meter_bar_warm, meter_rect_right_end, meter_rect_mid, meter_rect_left, meter_rect_left_end, meter_rect_right)
+        
+##    screen.blit(meter_bl, meter_rect_mid)
+##    screen.blit(meter_bl, meter_rect_left)
+##    screen.blit(meter_bl, meter_rect_left_end)
+##    screen.blit(meter_bl, meter_rect_right)
+##    screen.blit(meter_bl, meter_rect_right_end)
+
+def meterColorChange(meterH, meterW, meter1, meter2, meter3, meter4, meter5):
+    screen.blit(meterH, meter1)
+    screen.blit(meter_block, meter2)
+    screen.blit(meter_block, meter3)
+    screen.blit(meter_block, meter4)
+    screen.blit(meter_block, meter5)
 
 # Check Collison
 def check_collision(player_r, block):
@@ -211,6 +247,10 @@ def gravityKinda(player_r, block):
     for j in range(BLOCK_ROW_COUNT):
         for i in range(5):
             if(player_r.bottom < block[j][i].bottom and player_rect.x == block[j][i].x and blockIdentityArray[j][i] == 0):
+                player_r.y += 5
+                screen.blit(player_image, player_r)
+            # Fall when there's no block under you
+            elif(player_r.top > block[j][i].bottom and blockIdentityArray[j + 1][i] == 3):
                 player_r.y += 5
                 screen.blit(player_image, player_r)
 
