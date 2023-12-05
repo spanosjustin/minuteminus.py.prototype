@@ -81,16 +81,16 @@ meter_point = pygame.transform.scale(pygame.image.load("UI/MeterPoint.png"), (60
 minus_sign = pygame.transform.scale(pygame.image.load("UI/MinusSign.png"), (60, 100))
 
 ## Font Numbers
-zero_font = pygame.transform.scale(pygame.image.load("fontNumbers/fontZero.png"), (60, 100))
-one_font = pygame.transform.scale(pygame.image.load("fontNumbers/fontOne.png"), (60, 100))
-two_font = pygame.transform.scale(pygame.image.load("fontNumbers/fontTwo.png"), (60, 100))
-three_font = pygame.transform.scale(pygame.image.load("fontNumbers/fontThree.png"), (60, 100))
-four_font = pygame.transform.scale(pygame.image.load("fontNumbers/fontFour.png"), (60, 100))
-five_font = pygame.transform.scale(pygame.image.load("fontNumbers/fontFive.png"), (60, 100))
-six_font = pygame.transform.scale(pygame.image.load("fontNumbers/fontSix.png"), (60, 100))
-seven_font = pygame.transform.scale(pygame.image.load("fontNumbers/fontSeven.png"), (60, 100))
-eight_font = pygame.transform.scale(pygame.image.load("fontNumbers/fontEight.png"), (60, 100))
-nine_font = pygame.transform.scale(pygame.image.load("fontNumbers/fontNine.png"), (60, 100))
+##zero_font = pygame.transform.scale(pygame.image.load("fontNumbers/fontZero.png"), (60, 100))
+##one_font = pygame.transform.scale(pygame.image.load("fontNumbers/fontOne.png"), (60, 100))
+##two_font = pygame.transform.scale(pygame.image.load("fontNumbers/fontTwo.png"), (60, 100))
+##three_font = pygame.transform.scale(pygame.image.load("fontNumbers/fontThree.png"), (60, 100))
+##four_font = pygame.transform.scale(pygame.image.load("fontNumbers/fontFour.png"), (60, 100))
+##five_font = pygame.transform.scale(pygame.image.load("fontNumbers/fontFive.png"), (60, 100))
+##six_font = pygame.transform.scale(pygame.image.load("fontNumbers/fontSix.png"), (60, 100))
+##seven_font = pygame.transform.scale(pygame.image.load("fontNumbers/fontSeven.png"), (60, 100))
+##eight_font = pygame.transform.scale(pygame.image.load("fontNumbers/fontEight.png"), (60, 100))
+##nine_font = pygame.transform.scale(pygame.image.load("fontNumbers/fontNine.png"), (60, 100))
 
 ### Initialize Objects
 # Player
@@ -122,6 +122,11 @@ meter_point_rect = meter_point.get_rect(center=((SCREEN_WIDTH // 2), 45))
 
 ## Functions / Methods
 # Create Block Row
+def scoreHandling(curSco):
+    global currentScore
+    if(curSco < 0):
+        currentScore = 0
+
 def CreateABlockRow(blockAr):
     # handling New x & y
     newX = 200
@@ -190,40 +195,71 @@ def rowDisplay(blockAry):
 # Display UI
 def scoreDisplay():
     score_text = font.render(f"Score: {currentScore}", True, (255, 255, 255))
+    high_score_text = font.render(f"High Score: {highScore}", True, (255, 255, 255))
     screen.blit(score_text, (120, 10))
+    screen.blit(high_score_text, (510, 10))
 
 def displayWallUI(wall_img, wall_rect_L, wall_rect_R):
     screen.blit(wall_img, wall_rect_L)
     screen.blit(wall_img, wall_rect_R)
 
-def displayMeterUI(meter_bl, meter_pnt, meter_pnt_rect):
+def displayMeterUI(meter_bl, meter_pnt):
+    global meter_point_rect
+    # Meter objects
     meter_rect_mid = meter_bl.get_rect(center=(SCREEN_WIDTH // 2, 45))
+    
     meter_rect_left = meter_bl.get_rect(center=((SCREEN_WIDTH // 2) - 41, 45))
     meter_rect_left_end = meter_bl.get_rect(center=((SCREEN_WIDTH // 2) - 82, 45))
+    
     meter_rect_right = meter_bl.get_rect(center=((SCREEN_WIDTH // 2) + 41, 45))
     meter_rect_right_end = meter_bl.get_rect(center=((SCREEN_WIDTH // 2) + 82, 45))
 
     # Draw the Meter Block
-    if(meter_point_rect.x < meter_rect_mid.right and meter_point_rect.x > meter_rect_mid.left):
+##    if(meter_point_rect.x < meter_rect_mid.right
+##       and meter_point_rect.x > meter_rect_mid.left):
+    if(meter_point_rect.x < 400
+       and meter_point_rect.x > meter_rect_mid.left):
+        
         meterColorChange(meter_bar_hot, meter_bar_warm, meter_rect_mid, meter_rect_left, meter_rect_left_end,meter_rect_right,meter_rect_right_end)
-        #print("In Mid")
-    elif(meter_point_rect.x < meter_rect_left.right and meter_point_rect.x > meter_rect_left.left):
+##        print("In Mid")
+##        print(f"Meter right: {meter_point_rect.x}")
+##        print(f"Right L and R: {meter_rect_mid.left}, {meter_rect_mid.right}")
+##        print(f"End L and R: {meter_rect_mid.left}, {meter_rect_mid.right}, Center {meter_rect_mid.center}")
+        
+    elif(meter_point_rect.x < meter_rect_left.right
+         and meter_point_rect.x > meter_rect_left.left):
+        
         meterColorChange(meter_bar_hot, meter_bar_warm, meter_rect_left, meter_rect_left_end,meter_rect_right,meter_rect_right_end, meter_rect_mid)
-        #print("In left")  
-    elif(meter_point_rect.x < meter_rect_left_end.right and meter_point_rect.x > meter_rect_left_end.left):
+        #print("In left")
+        
+    elif(meter_point_rect.x < meter_rect_left_end.right
+         and meter_point_rect.x > meter_rect_left_end.left
+         or meter_point_rect.x <= meter_rect_left_end.left):
+        
         meterColorChange(meter_bar_hot, meter_bar_warm, meter_rect_left_end, meter_rect_right, meter_rect_right_end, meter_rect_mid, meter_rect_left)
-        #print("In left end")    
-    elif(meter_point_rect.x < meter_rect_right.right and meter_point_rect.x > meter_rect_right.left):
+        #print("In left end")
+
+    #### *
+##    elif(meter_point_rect.x < meter_rect_right.right
+##         and meter_point_rect.x > meter_rect_right.left):
+    elif(meter_point_rect.x < 449
+         and meter_point_rect.x > 401):
+        
         meterColorChange(meter_bar_hot, meter_bar_warm, meter_rect_right, meter_rect_right_end, meter_rect_mid, meter_rect_left, meter_rect_left_end)
-        #print("In right")  
-    elif(meter_point_rect.x < meter_rect_right_end.right and meter_point_rect.x > meter_rect_right_end.left):
+##        print(f"Meter right: {meter_point_rect.x}")
+##        print(f"Right L and R: {meter_rect_right.left}, {meter_rect_right.right}")
+##        print(f"End L and R: {meter_rect_right_end.left}, {meter_rect_right_end.right}, Center {meter_rect_right_end.center}")
+##        print("In right")
+        
+##    elif(meter_point_rect.x < meter_rect_right_end.right
+##         and meter_point_rect.x > meter_rect_right_end.left
+##         or meter_point_rect.x >= meter_rect_right_end.right):
+    elif(meter_point_rect.x < 512
+         and meter_point_rect.x > 450
+         or meter_point_rect.x >= meter_rect_right_end.right):
+        
         meterColorChange(meter_bar_hot, meter_bar_warm, meter_rect_right_end, meter_rect_mid, meter_rect_left, meter_rect_left_end, meter_rect_right)
-        #print("In right end")  
-##    screen.blit(meter_bl, meter_rect_mid)
-##    screen.blit(meter_bl, meter_rect_left)
-##    screen.blit(meter_bl, meter_rect_left_end)
-##    screen.blit(meter_bl, meter_rect_right)
-##    screen.blit(meter_bl, meter_rect_right_end)
+        #print("In right end")
 
 def meterColorChange(meterH, meterW, meter1, meter2, meter3, meter4, meter5):
     screen.blit(meterH, meter1)
@@ -243,13 +279,15 @@ def check_collision(player_r, block):
                 # Calculate the score of the brick and add it to the current score
                 if(blockIdentityArray[j][i] == 1):
                     currentScore -= 1
+                    scoreHandling(currentScore)
                 elif(blockIdentityArray[j][i] == 2):
                     currentScore -= 3
+                    scoreHandling(currentScore)
                 elif(blockIdentityArray[j][i] == 3):
                     currentScore -= 5
+                    scoreHandling(currentScore)
                 # Set the block's identy number to so it will no longer be acted with
                 blockIdentityArray[j][i] = 0
-                print("Current Score: ", currentScore)
             
 def gravityKinda(player_r, block):
     for j in range(BLOCK_ROW_COUNT):
@@ -393,15 +431,16 @@ while running:
     displayWallUI(wall_image, wall_img_rect_L, wall_img_rect_R)
 
     # Display Meter 
-    displayMeterUI(meter_block, meter_point, meter_point_rect)
+    displayMeterUI(meter_block, meter_point)
     
-    # Move the Meter
+    ## Move the Meter
     if meter_point_rect.x < ORIGINAL_METER_X + 100 and directionRight == True:
-        meter_point_rect.x += 2
+        meter_point_rect.x += 1
+        print(meter_point_rect.x)
         if meter_point_rect.x == ORIGINAL_METER_X + 100:
             directionRight = False
     elif meter_point_rect.x > ORIGINAL_METER_X - 100 and directionRight == False:
-        meter_point_rect.x -= 2
+        meter_point_rect.x -= 1
         if meter_point_rect.x == ORIGINAL_METER_X - 100:
             directionRight = True
 
@@ -417,13 +456,22 @@ while running:
 
     # Game Over
     while game_over:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+                
         # Print a blank screen
         screen.fill((0, 0, 0))
-    
-        game_over_text = font.render("GAME OVER", True, (255, 0, 0))
+
         score_text = font.render(f"Score: {currentScore}", True, (255, 255, 255))
-        screen.blit(score_text, ((SCREEN_WIDTH // 2) - 50, (SCREEN_HEIGHT // 2) - 50))
-        screen.blit(game_over_text, (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+        screen.blit(score_text, ((SCREEN_WIDTH // 2) - 50, (SCREEN_HEIGHT // 2) + 30))
+
+        high_score_text = font.render(f"High Score: {highScore}", True, (255, 255, 255))
+        screen.blit(high_score_text, ((SCREEN_WIDTH // 2) - 85, (SCREEN_HEIGHT // 2) - 20))
+
+        game_over_text = font.render("GAME OVER", True, (255, 0, 0))
+        screen.blit(game_over_text, ((SCREEN_WIDTH // 2) - 80, (SCREEN_HEIGHT // 2) - 70))
 
         pygame.display.flip()
 
