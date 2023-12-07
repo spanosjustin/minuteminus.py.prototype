@@ -110,11 +110,11 @@ five_box_broken_rect = five_box_broken.get_rect(center=(SCREEN_WIDTH // 2, SCREE
 meter_point_rect = meter_point.get_rect(center=((SCREEN_WIDTH // 2), 45))
 
 ### Load best score from file
-##try:
-##    with open("best_score.txt", "r") as file:
-##        highScore = int(file.read())
-##except FileNotFoundError:
-##    highScore = 0
+try:
+    with open("highScore.txt", "r") as file:
+        highScore = int(file.read())
+except FileNotFoundError:
+    highScore = 0
 
 ## Functions / Methods
 # Create Block Row
@@ -452,6 +452,10 @@ while running:
         
         if keys[pygame.K_DOWN]:
             userSkinSelection()
+            
+        # Temporary developer Game Over Exit
+        if keys[pygame.K_f]:
+            game_over = True
 
     # Start Screen
     while(start_screen == True):
@@ -526,29 +530,50 @@ while running:
     pygame.display.flip()
     clock.tick(100)
 
-    #if(currentScore <= 0):
-    #    game_over = True
+    if(currentScore <= 0):
+        game_over = True
 
     # Game Over
-    while game_over:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+    if game_over:
+        # Save the high score
+        if currentScore > highScore:
+            highScore = currentScore
+            with open("highScore.txt", "w") as file:
+                file.write(str(highScore))
                 
-        # Print a blank screen
-        screen.fill((0, 0, 0))
+        while game_over:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
 
-        score_text = font.render(f"Score: {currentScore}", True, (255, 255, 255))
-        screen.blit(score_text, ((SCREEN_WIDTH // 2) - 50, (SCREEN_HEIGHT // 2) + 30))
+            # Re-start the game when space bar is pressed
+            keys = pygame.key.get_pressed()  
+            if keys[pygame.K_SPACE]:
+                blockArray = [[0] * 5 for _ in range(BLOCK_ROW_COUNT + 1)]
+                blockIdentityArray = [[0] * 5 for _ in range(BLOCK_ROW_COUNT + 1)]
+                totalActiveScore = 0
+                currentScore = 0
+                player_rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT - 300)
+                initialSetUp = True
+                game_over = False
+                    
+            # Print a blank screen
+            screen.fill((0, 0, 0))
 
-        high_score_text = font.render(f"High Score: {highScore}", True, (255, 255, 255))
-        screen.blit(high_score_text, ((SCREEN_WIDTH // 2) - 85, (SCREEN_HEIGHT // 2) - 20))
+            score_text = font.render(f"Score: {currentScore}", True, (255, 255, 255))
+            screen.blit(score_text, ((SCREEN_WIDTH // 2) - 50, (SCREEN_HEIGHT // 2) + 30))
 
-        game_over_text = font.render("GAME OVER", True, (255, 0, 0))
-        screen.blit(game_over_text, ((SCREEN_WIDTH // 2) - 80, (SCREEN_HEIGHT // 2) - 70))
+            high_score_text = font.render(f"High Score: {highScore}", True, (255, 255, 255))
+            screen.blit(high_score_text, ((SCREEN_WIDTH // 2) - 85, (SCREEN_HEIGHT // 2) - 20))
 
-        pygame.display.flip()
+            game_over_text = font.render("GAME OVER", True, (255, 0, 0))
+            screen.blit(game_over_text, ((SCREEN_WIDTH // 2) - 80, (SCREEN_HEIGHT // 2) - 70))
+
+            retry_text = font.render("PRESS SPACE TO RETRY", True, (150, 0, 255))
+            screen.blit(retry_text, ((SCREEN_WIDTH // 2) - 140, (SCREEN_HEIGHT // 2) + 180))
+
+            pygame.display.flip()
 
 # Quit Pygame
 pygame.quit()
