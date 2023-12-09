@@ -319,8 +319,10 @@ def jumpOnTo(player_r, block):
 # Player Direction
 def jumpDirection(originPoint, meterP, playerFrc):
     # set player origin point to a point on the meter
+    global player_rect
     originOnMeter = 0
-    
+
+    # Middle Direction
     if(originPoint.x == 350):
         originOnMeter = 400
     # To the right
@@ -334,13 +336,31 @@ def jumpDirection(originPoint, meterP, playerFrc):
     elif(originPoint.x == 150):
         originOnMeter = 318
         
-##    print(originPoint.x)
-##    print(originOnMeter)
-    
-    if(meterP.x >= (originOnMeter - 21) and meterP.x < (originOnMeter + 20)):
+    #print(originPoint.x)
+    #print(originOnMeter)
+
+    # Middle Direction
+    if(meterP.x >= (originOnMeter - 50) and meterP.x < (originOnMeter - 10)):
         print("Jumps Up")
-    elif(meterP.x >= (originOnMeter + 20) and meterP.x < (originOnMeter + 41)):
-        print(f"Directional: {meterP.x}")
+
+    # Right Direction
+    elif(meterP.x >= (originOnMeter - 10) and meterP.x < (originOnMeter + 31)):
+        print(f"Jump once right: {meterP.x}")
+        player_rect.x += PLAYER_SPEED
+        screen.blit(player_image, player_rect)
+
+    elif(meterP.x >= (originOnMeter + 31) and meterP.x < (originOnMeter + 72)):
+        print(f"Jump twice right: {meterP.x}")
+        #player_rect.x += (PLAYER_SPEED * 2)
+        
+    # Left Direction
+    elif(meterP.x >= (originOnMeter - 93) and meterP.x < (originOnMeter - 50)):
+        print(f"Jump once left: {meterP.x}")
+        #player_rect.x -= PLAYER_SPEED
+
+    elif(meterP.x >= (originOnMeter - 136) and meterP.x < (originOnMeter - 93)):
+        print(f"Jump twice left: {meterP.x}")
+        #player_rect.x -= (PLAYER_SPEED * 2)
 
 # Row Timer
 def rowTimer():
