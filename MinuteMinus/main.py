@@ -3,7 +3,7 @@
 ## Minus Minute Py Prototype
 ## Justin Spanos
 ##
-## Started:  November 2023
+## Started:  November 14th 2023
 ## Finished:
 #
 ###
@@ -39,6 +39,10 @@ initialSetUp = True
 currentScore = 0
 highScore = 0
 totalActiveScore = 0
+
+background = pygame.Surface((SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2))
+background.fill((0, 0, 0))
+camera_offset = [0, 0]
 
 # Game Vars
 directionRight = True
@@ -117,6 +121,16 @@ except FileNotFoundError:
     highScore = 0
 
 ## Functions / Methods
+# Camera handling
+def cameraHandle(x):
+    global camera_offset
+    if(x > 0):
+        camera_offset[1] += 5
+        print("Camera Up")
+    else:
+        camera_offset[1] -= 5
+        print("Camera Down")
+        
 # Create Block Row
 def scoreHandling(curSco):
     global currentScore
@@ -191,8 +205,6 @@ def rowDisplay(blockAry):
 def userSkinSelection():
     global trackPlayerSkin
     global player_image
-
-    print("Changed")
 
     # Simple else/if statement, will change to a for loop iteration eventually
     if(trackPlayerSkin == 0):
@@ -395,7 +407,7 @@ while running:
                 # Row Display
                 rowDisplay(blockArray)
                 # Player Display
-                screen.blit(player_image, player_rect)
+                screen.blit(player_image, (player_rect.x, player_rect.y - camera_offset_y))
                 pygame.display.flip()
             #player_rect.x -= PLAYER_SPEED
         if keys[pygame.K_RIGHT] and player_rect.right < wall_img_rect_R.x - 40:
@@ -418,16 +430,17 @@ while running:
                 # Dispay Block Array
                 rowDisplay(blockArray)
                 # Player Display
-                screen.blit(player_image, player_rect)
+                screen.blit(player_image, (player_rect.x, player_rect.y - camera_offset_y))
                 pygame.display.flip()
             
         if keys[pygame.K_UP] and player_rect.top > 0:
             originalPos = player_rect.y
+            #jumpDirection(player_rect, meter_point_rect, playerForce)
             for i in range(11):
                 # Graphic Logic
                 clock.tick(50)
-                jumpDirection(player_rect, meter_point_rect, playerForce)
                 player_rect.y -= PLAYER_SPEED
+                player_rect.x -= 10
                 screen.fill((0, 0, 0))
                 # Display UI
                 scoreDisplay()
@@ -438,7 +451,7 @@ while running:
                 # Display Block Array
                 rowDisplay(blockArray)
                 # Player Display
-                screen.blit(player_image, player_rect)
+                screen.blit(player_image, (player_rect.x, player_rect.y - camera_offset_y))
                 pygame.display.flip()
                 if(i == 10):
                     playerInAir = True
@@ -457,7 +470,7 @@ while running:
                     # Display Block Array
                     rowDisplay(blockArray)
                     # Player Display
-                    screen.blit(player_image, player_rect)
+                    screen.blit(player_image, (player_rect.x, player_rect.y - camera_offset_y))
                     pygame.display.flip()
 
                     # Jump on a box
@@ -472,6 +485,11 @@ while running:
         
         if keys[pygame.K_DOWN]:
             userSkinSelection()
+
+        if keys[pygame.K_w]:
+            cameraHandle(5)
+        if keys[pygame.K_s]:
+            cameraHandle(-5)
             
         # Temporary developer Game Over Exit
         if keys[pygame.K_f]:
@@ -516,6 +534,9 @@ while running:
 
     # Print a blank screen
     screen.fill((0, 0, 0))
+    
+    screen.blit(background, (0,0))
+    camera_offset_y = camera_offset[1]
 
     # Score
     scoreDisplay()
@@ -525,7 +546,7 @@ while running:
                 
     # Handling Player
     gravityKinda(player_rect, blockArray)
-    screen.blit(player_image, player_rect)
+    screen.blit(player_image, (player_rect.x, player_rect.y - camera_offset_y))
 
     # Display UI
     displayWallUI(wall_image, wall_img_rect_L, wall_img_rect_R)
