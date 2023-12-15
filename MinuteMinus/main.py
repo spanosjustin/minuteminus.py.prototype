@@ -4,7 +4,7 @@
 ## Justin Spanos
 ##
 ## Started:  November 14th 2023
-## Finished:
+## Finished: 
 #
 ###
 
@@ -24,7 +24,7 @@ ORIGINAL_METER_X = 370
 RED_COLOR = (251, 0, 0, 50)
 ORANGE_COLOR = (251, 126, 0, 100)
 clock = pygame.time.Clock()
-BLOCK_ROW_COUNT = 2
+BLOCK_ROW_COUNT = 4
 
 # Fonts
 font = pygame.font.Font(None, 36)
@@ -126,10 +126,11 @@ def cameraHandle(x):
     global camera_offset
     if(x > 0):
         camera_offset[1] += 5
-        print("Camera Up")
+        camera_offset_y = camera_offset[1]
+        screen.fill((0, 0, 0))
+        screen.blit(player_image, (player_rect.x, player_rect.y - camera_offset_y))
     else:
         camera_offset[1] -= 5
-        print("Camera Down")
         
 # Create Block Row
 def scoreHandling(curSco):
@@ -190,15 +191,15 @@ def rowDisplay(blockAry):
         # Iterate and Display Block Array
         for i in range(5):       
             if(blockIdentityArray[j][i] == 1):
-                screen.blit(one_box, blockAry[j][i])
+                screen.blit(one_box, (blockAry[j][i].x, blockAry[j][i].y - camera_offset_y))
                 blockIdentityArray[j + 1][i] = 3
                 
             elif(blockIdentityArray[j][i] == 2):
-                screen.blit(three_box, blockAry[j][i])
+                screen.blit(three_box, (blockAry[j][i].x, blockAry[j][i].y - camera_offset_y))
                 blockIdentityArray[j + 1][i] = 3
                 
             elif(blockIdentityArray[j][i] == 3):
-                screen.blit(five_box, blockAry[j][i])
+                screen.blit(five_box, (blockAry[j][i].x, blockAry[j][i].y - camera_offset_y))
             # This sets the last row to 3 which will be used as an object that has no mass for gravity interaction
             #blockIdentityArray[j + 1][i] = 3
 
@@ -440,7 +441,6 @@ while running:
                 # Graphic Logic
                 clock.tick(50)
                 player_rect.y -= PLAYER_SPEED
-                player_rect.x -= 10
                 screen.fill((0, 0, 0))
                 # Display UI
                 scoreDisplay()
@@ -487,9 +487,12 @@ while running:
             userSkinSelection()
 
         if keys[pygame.K_w]:
-            cameraHandle(5)
+            for i in range(10):
+                cameraHandle(5)
+                
         if keys[pygame.K_s]:
-            cameraHandle(-5)
+            for i in range(10):
+                cameraHandle(-5)
             
         # Temporary developer Game Over Exit
         if keys[pygame.K_f]:
